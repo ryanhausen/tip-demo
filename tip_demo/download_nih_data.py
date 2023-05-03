@@ -1,3 +1,8 @@
+import dataclasses as dc
+from itertools import count
+import json
+from typing import List, Tuple
+
 from pynih import apis
 
 from nih_award import NihAward
@@ -14,10 +19,15 @@ INCLUDE_FIELDS = [
 ]
 
 
-def download_nih_data(year:int):
+def download_nih_data(
+    year:int, 
+    spending_categories:List[int]=[4372],
+    limit:int = 500,
+    offset:int = 0,
+) -> Tuple[List[NihAward], List[NihPi]]:
     search_criteria = dict(
         spending_categories=dict(
-            values=[4372], # spending category 4372 is for machine learning and artificial intelligence
+            values=spending_categories, # spending category 4372 is for machine learning and artificial intelligence
             match_all=False,
         ),
 
@@ -30,8 +40,8 @@ def download_nih_data(year:int):
     results = apis.query_project_api(
         include_fields=INCLUDE_FIELDS,
         search_criteria=search_criteria,
-        limit=10,
-        offset=0,
+        limit=limit,
+        offset=offset,
     )
 
     pis = []
@@ -49,17 +59,39 @@ def download_nih_data(year:int):
         awards.append(results_award)
 
     pis = list(set(pis))
+    awards = list(set(awards))
 
-    return results
+    return awards, pis
 
 
 
 def main():
 
-    results = download_nih_data(2019)
+    years = [2019, 2020, 2018]
 
-    print(results)
+    for year in years:
+        spending_categories = [4372] if year > 2018 else None  
+        limit = 500
+        awards, pis = [], []
+        for i in count(0):
+            tmp_awards, tmp_pis = download_nih_data(
+                year, 
+                spending_categories=spending_categories,
+                limit=limit,
+                offset=i*limit,
+            )
 
+            print(f"Downloaded {len(tmp_awards)} awards for {year}")
+            awards.extend(tmp_awards)
+            pis.extend(tmp_pis)
+
+            if len(tmp_awards)<limit or (i+1)*limit>14_999:
+                break
+
+        for item, name in [(awards, "awards"), (pis, "pis")]:
+            print(f"{len(item)} {name} for {year}")
+            with open(f"{name}-{year}.json", "w") as f:
+                json.dump(list(map(dc.asdict, item)), f, indent=2)
 
 
 if __name__=="__main__":

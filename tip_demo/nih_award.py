@@ -10,7 +10,7 @@ class NihAward:
     principal_investigators: List[int]
 
     @staticmethod
-    def from_nih_api(data: dict, ) -> "NihAward":
+    def from_nih_api(data: dict) -> "NihAward":
         return NihAward(
             appl_id=data["appl_id"],
             project_num=data["project_num"],
@@ -21,4 +21,13 @@ class NihAward:
                 data["principal_investigators"],
             )),
         )
+    
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, NihAward):
+            raise NotImplemented("Cannot compare NihAward to other type")
+
+        return self.appl_id == other.appl_id
+
+    def __hash__(self) -> int:
+        return hash(self.appl_id)
 
