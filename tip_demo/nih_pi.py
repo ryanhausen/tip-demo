@@ -1,6 +1,11 @@
-
 import dataclasses as dc
 from typing import Optional
+
+try:
+    from tip_demo.algorithm_data_model import Author, Paper
+except ImportError:
+    from algorithm_data_model import Author, Paper
+
 
 @dc.dataclass
 class NihPi:
@@ -19,6 +24,15 @@ class NihPi:
             last_name=data["last_name"],
             email=data["email"],
         )
+
+    def to_graph_object(self) -> Author:
+        return Author(
+            author_id=self.profile_id,
+            first_name=self.first_name,
+            middle_name=self.middle_name,
+            last_name=self.last_name,
+        )
+
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, NihPi):
