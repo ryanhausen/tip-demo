@@ -25,13 +25,18 @@ class NihPi:
             email=data["email"],
         )
 
-    def to_graph_object(self) -> Author:
-        return Author(
+    def to_graph_object(self, udpate_params:dict={}) -> Author:
+
+        original_params = dict(
             author_id=self.profile_id,
             first_name=self.first_name,
             middle_name=self.middle_name,
             last_name=self.last_name,
         )
+
+        original_params.update(udpate_params)
+
+        return Author(**original_params)
 
 
     def __eq__(self, other: object) -> bool:

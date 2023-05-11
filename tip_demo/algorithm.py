@@ -41,6 +41,10 @@ def evaluate_graphs_authors(
         )
     ))
 
+    if len(seed_authors) == 0:
+        print("No seed authors found")
+        return target_graph
+
     non_seed_authors = list(filter(
         lambda node: is_author(node) and not is_seed(node),
         target_graph.nodes(data=True)
@@ -50,7 +54,12 @@ def evaluate_graphs_authors(
     seed_score = sum(map(lambda node: node[1]["ai_score"], seed_authors)) / len(
         seed_authors
     )
-    non_seed_score = seed_score / len(non_seed_authors)
+
+    if len(non_seed_authors) == 0:
+        print("No non seed authors found")
+        return target_graph
+    else:
+        non_seed_score = seed_score / len(non_seed_authors) if len(non_seed_authors) > 0 else 0
 
     for author in non_seed_authors:
         author[1]["ai_score"] = non_seed_score

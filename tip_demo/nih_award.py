@@ -29,12 +29,16 @@ class NihAward:
             ),
         )
 
-    def to_graph_object(self) -> Paper:
-        return Paper(
+    def to_graph_object(self, update_params:dict = {}) -> Paper:
+
+        original_params = dict(
             paper_id=self.appl_id,
             title=self.project_title,
             url=self.project_detail_url,
         )
+        original_params.update(update_params)
+
+        return Paper(**original_params)
 
 
     def __eq__(self, other: object) -> bool:
