@@ -62,7 +62,7 @@ def download_nih_data(
 
 def main():
 
-    years = [2019, 2020, 2018]
+    years = [2019, 2020, 2021, 2022]
 
     for year in years:
         spending_categories = [4372] if year > 2018 else None
